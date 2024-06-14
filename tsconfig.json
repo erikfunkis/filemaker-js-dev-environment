@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "jsxImportSource": "react",
+    "esModuleInterop": true
+  },
+  "include": ["./src/**/*.ts"]
+}
