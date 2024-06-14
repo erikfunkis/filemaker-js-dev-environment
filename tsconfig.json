@@ -3,5 +3,9 @@
     "esModuleInterop": true,
     "jsx": "react-jsx"
   },
+  "baseUrl": ".",
+  "paths": {
+    "~*": ["./*"]
+  },
   "include": ["./public/src/**/*.tsx"]
 }
