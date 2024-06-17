@@ -1,16 +1,46 @@
-import * as React from "react";
-const { useState, useEffect } = React;
+import React, { useCallback, useRef, useState } from "react";
 
-export default function Editor() {
-  const [counter, setCounter] = useState(0);
-  useEffect(() => {
-    console.log("counter", counter);
-  }, [counter]);
+import { EDITOR_JS_TOOLS } from "./tools";
+import { createReactEditorJS } from "react-editor-js";
+import { OutputData } from "@editorjs/editorjs";
+
+interface EditorCore {
+  destroy(): Promise<void>;
+  clear(): Promise<void>;
+  save(): Promise<OutputData>;
+  render(data: OutputData): Promise<void>;
+}
+
+const ReactEditorJs = createReactEditorJS();
+
+const Editor: React.FC<{}> = () => {
+  const [latestData, setLatestData] = useState<OutputData | null>(null);
+  const editorCore = useRef<EditorCore>(null);
+
+  const handleInitialize = React.useCallback((instance) => {
+    editorCore.current = instance;
+  }, []);
+
+  const handleSave = useCallback(async () => {
+    const savedData = await editorCore.current.save();
+    setLatestData(savedData);
+  }, [setLatestData]);
   return (
     <div>
       <h1>Editor</h1>
-      <button onClick={() => setCounter(counter + 1)}>Increment</button>
-      <pre>{JSON.stringify({ counter }, null, 2)}</pre>
+      <ReactEditorJs
+        onInitialize={handleInitialize}
+        tools={EDITOR_JS_TOOLS}
+        onChange={(changeEvent) => {
+          console.log("changeEvent", changeEvent);
+        }}
+      />
+      <button onClick={handleSave}>Save</button>
+      <hr></hr>
+      <h2>Latest Data</h2>
+      <pre>{JSON.stringify(latestData, null, 2)}</pre>
     </div>
   );
-}
+};
+
+export default Editor;
